@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Faiss : Billion-scale similarity search with GPUs Faiss is a library for efficient similarity search and clustering of dense vectors. It contains algorithms that search in sets of vectors of any size,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dreamer fly&#39;s blog">
+<meta property="og:url" content="http://yoursite.com/2018/06/12/Faiss/index.html">
+<meta property="og:site_name" content="Dreamer fly&#39;s blog">
+<meta property="og:description" content="Faiss : Billion-scale similarity search with GPUs Faiss is a library for efficient similarity search and clustering of dense vectors. It contains algorithms that search in sets of vectors of any size,">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/2018/06/12/Faiss/warpselect.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/12/Faiss/alg.png">
+<meta property="og:updated_time" content="2018-06-12T09:54:52.716Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Dreamer fly&#39;s blog">
+<meta name="twitter:description" content="Faiss : Billion-scale similarity search with GPUs Faiss is a library for efficient similarity search and clustering of dense vectors. It contains algorithms that search in sets of vectors of any size,">
+<meta name="twitter:image" content="http://yoursite.com/2018/06/12/Faiss/warpselect.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/06/12/Faiss/"/>
+
+
+
+
+
+  <title> | Dreamer fly's blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/flywme"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Dreamer fly's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-sitemap">
+          <a href="/sitemap.xml" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br />
+            
+            Sitemap
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/12/Faiss/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fly">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dreamer fly's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline"></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-12T17:09:33+08:00">
+                2018-06-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          <span>&nbsp; | &nbsp;
+          <span id="busuanzi_value_page_pv" ></span>次阅读
+          </span>    
+          
+          
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Faiss-Billion-scale-similarity-search-with-GPUs"><a href="#Faiss-Billion-scale-similarity-search-with-GPUs" class="headerlink" title="Faiss : Billion-scale similarity search with GPUs"></a>Faiss : Billion-scale similarity search with GPUs</h1><blockquote>
+<p>Faiss is a library for efficient similarity search and clustering of dense vectors. It contains algorithms that search in sets of vectors of any size, up to ones that possibly do not fit in RAM. It also contains supporting code for evaluation and parameter tuning. Faiss is written in C++ with complete wrappers for Python. Some of the most useful algorithms are implemented on the GPU. It is developed by Facebook AI Research.</p>
+</blockquote>
+<p><strong>faiss 主要围绕索引index进行一系列相应的检索</strong></p>
+<h2 id="1-索引类型"><a href="#1-索引类型" class="headerlink" title="1.索引类型"></a>1.索引类型</h2><table>
+<thead>
+<tr>
+<th style="text-align:center">method</th>
+<th style="text-align:center">class name</th>
+<th style="text-align:center">index_factory</th>
+<th style="text-align:center">parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">exact search for L2</td>
+<td style="text-align:center">IndexFlatL2</td>
+<td style="text-align:center">“Flat”</td>
+<td style="text-align:center">d</td>
+</tr>
+<tr>
+<td style="text-align:center">exact search for inner product</td>
+<td style="text-align:center">IndexFlatIP</td>
+<td style="text-align:center">“Flat”</td>
+<td style="text-align:center">d</td>
+</tr>
+<tr>
+<td style="text-align:center">hierarchial navigable small world graph</td>
+<td style="text-align:center">IndexHNSWFlat</td>
+<td style="text-align:center">“HNSWx,Flat”</td>
+<td style="text-align:center">d,M</td>
+</tr>
+<tr>
+<td style="text-align:center">inverted file withexact post-vertification</td>
+<td style="text-align:center">IndexIVFFlat</td>
+<td style="text-align:center">“IVFx,Flat”</td>
+<td style="text-align:center">quantizer,d,nlists,metric</td>
+</tr>
+<tr>
+<td style="text-align:center">locality sensitive hashing</td>
+<td style="text-align:center">IndexLSH</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">d,nbits</td>
+</tr>
+<tr>
+<td style="text-align:center">scalar quantizer</td>
+<td style="text-align:center">IndexScalarQuantizer</td>
+<td style="text-align:center">“SQ8”</td>
+<td style="text-align:center">d</td>
+</tr>
+<tr>
+<td style="text-align:center">product quantizer</td>
+<td style="text-align:center">IndexPQ</td>
+<td style="text-align:center">“PQx”</td>
+<td style="text-align:center">d,M,nbits</td>
+</tr>
+<tr>
+<td style="text-align:center">IVF and SQ</td>
+<td style="text-align:center">IndexIVFSalarQuantizer</td>
+<td style="text-align:center">“IVFx,SQ4”,”IVFx,SQ8”</td>
+<td style="text-align:center">quantizer,d,nlists,qtype</td>
+</tr>
+<tr>
+<td style="text-align:center">IVFADC(coarse quantizer+PQ on residuals)</td>
+<td style="text-align:center">IndexIVFPQ</td>
+<td style="text-align:center">“IVFx,PQy”</td>
+<td style="text-align:center">quantizer,d,nlists,M,nbits</td>
+</tr>
+<tr>
+<td style="text-align:center">IVFADC+R(same as IVFADC with re-ranking based on codes)</td>
+<td style="text-align:center">IndexIVFPQR</td>
+<td style="text-align:center">“IVFx,PQy+z”</td>
+<td style="text-align:center">quantizer,d,nlists,M,nbits,M_refine,nbits_refine</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Pre-filtering PQ codes with polysemous codes:设置一个阈值减少海明距离的对比次数.训练前定义index.do_polysemous_training = true</li>
+<li>精确检索:flat,不按照顺序添加使用add_with_ids</li>
+<li><strong>内存限制</strong><ul>
+<li>have a lots of RAM or the dataset is small: HNSW(不支持:add_with_ids/remove/gpu)</li>
+<li>if somewhat: …,flat</li>
+<li>if quite important: PCARx,…,SQ8</li>
+<li>if very important: OPQx_y,…,PQx</li>
+</ul>
+</li>
+<li>IVF加速,PQ减小内存占用</li>
+<li><strong>special operation(都不支持gpu)</strong><ul>
+<li>remove_ids:删除一个IDSelector 批量IDSelectorBatch</li>
+<li>range_search:R邻域搜索</li>
+<li>write_index/read_index:将索引写入文件/读取索引文件</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-检索过程"><a href="#2-检索过程" class="headerlink" title="2.检索过程"></a>2.检索过程</h2><ul>
+<li>getting data</li>
+<li>building an index and adding the vectors to it </li>
+<li>searching</li>
+</ul>
+<pre><code>//init data
+int d = 64;            // dimension
+int nb = 100000;       // database size
+int nq = 10000;        // nb of queries
+float *xb = new float[d * nb];
+float *xq = new float[d * nq];
+for(int i = 0; i &lt; nb; i++) {
+for(int j = 0; j &lt; d; j++) xb[d * i + j] = drand48();
+xb[d * i] += i / 1000.;
+}
+for(int i = 0; i &lt; nq; i++) {
+for(int j = 0; j &lt; d; j++) xq[d * i + j] = drand48();
+xq[d * i] += i / 1000.;
+}
+
+//build index add vectors
+faiss::IndexFlatL2 index(d);// call constructor
+index.add(nb, xb);        // add vectors to the index
+printf(&quot;ntotal = %ld\n&quot;, index.ntotal);
+
+// search xq
+long *I = new long[k * nq];
+float *D = new float[k * nq];
+index.search(nq, xq, k, D, I);
+</code></pre><h3 id="2-1-cpu-flat-search"><a href="#2-1-cpu-flat-search" class="headerlink" title="2.1 cpu flat search"></a>2.1 cpu flat search</h3><p><strong>最大堆实现</strong></p>
+<ul>
+<li>根据距离比较的方法L2/Inner Product 选择分支</li>
+<li>初始化数据结构heaparray,堆结构保存val+id</li>
+<li>数据量不多时使用sse否则用blas</li>
+<li>暴力搜索,用openmp并行每个查询向量的查询过程,逐一计算查询向量和向量库中的所有距离(_mm_hadd_ps类似指令),加入最大堆</li>
+<li>最终对堆内元素排序.</li>
+</ul>
+<h3 id="2-2-inverted-file-IVF-search"><a href="#2-2-inverted-file-IVF-search" class="headerlink" title="2.2 inverted file(IVF) search"></a>2.2 inverted file(IVF) search</h3><p><strong>倒排实现</strong></p>
+<ul>
+<li>训练: 粗糙量化</li>
+<li>建立索引: 遍历所有向量,找到距离最近的聚类中心;遍历所有聚类中心建立倒排表(将可以聚类到同一中心的id push到同一倒排list)</li>
+<li>检索: 先粗糙检索返回几个最近的聚类中心,获取对应的倒排索引表,遍历每个向量,和查询向量计算距离,将结果放入最大堆,最终将最大堆排序</li>
+</ul>
+<blockquote>
+<p>在暴力检索基础上通过聚类将数据分片,粗糙检索使得计算代价大大减小</p>
+</blockquote>
+<h3 id="2-3-PQ-search"><a href="#2-3-PQ-search" class="headerlink" title="2.3 PQ search"></a>2.3 PQ search</h3><p><strong>乘积量化实现</strong></p>
+<p>关于乘积量化是引用了<a href="https://lear.inrialpes.fr/pubs/2011/JDS11/jegou_searching_with_quantization.pdf" target="_blank" rel="noopener">PQ论文</a><br>, 我之前也写过关于这篇论文的<a href="https://flywme.github.io/2018/01/02/product-quantization-for-NN-search/" target="_blank" rel="noopener">笔记</a></p>
+<p>思想:向量量化只是单次聚类,乘积量化将一个高维向量压缩至低维空间的笛卡尔积，再在子空间内进行量化（K-means构造码本）用一个很短的编码表示.将向量分成M段, 每一段内共有ksub个聚类中心(码本),每个聚类中心共有dsub维.</p>
+<p><strong>进一步优化的算法是将PQ和IVF结合,检索速度提升,存储空间缩小</strong></p>
+<h3 id="2-4-GPU-flat-search"><a href="#2-4-GPU-flat-search" class="headerlink" title="2.4 GPU flat search"></a>2.4 GPU flat search</h3><h4 id="contributions"><a href="#contributions" class="headerlink" title="contributions"></a>contributions</h4><ul>
+<li>a GPU k-selection algorithm, operating in fast register<br>memory(使用shuffle指令) and flexible enough to be fusable with other kernels, for which we provide a complexity analysis.</li>
+<li>a near-optimal algorithmic layout for exact and approximate k-nearest neighbor search on GPU.</li>
+<li>a range of experiments that show that these improvements<br>outperform previous art by a large margin on mid- to large-scale nearest-neighbor search tasks, in single or multi-GPU configurations.</li>
+</ul>
+<h4 id="fast-k-selection-on-the-GPU"><a href="#fast-k-selection-on-the-GPU" class="headerlink" title="fast k-selection on the GPU"></a>fast k-selection on the GPU</h4><p><strong>基于GPU的检索算法: warpSelect</strong></p>
+<ul>
+<li>a: 计算好的查询向量与向量库的距离,每次连续读取warp size(32)个距离</li>
+<li>每一行为一个lane,lane j负责处理aj,a32+j,…, merge thread queue时使用<strong>shuffle指令</strong>,允许线程直接读取其他线程的寄存器值,只要在同一个warp中</li>
+<li>将读入的距离与To比较,若大直接丢掉,否则通过插入排序进入thread queue中,队列从左到右从大到小</li>
+<li>通过warp ballot指令判断To是否大于warp queue中的最大值Wk-1,只要有一个To小于Wk-1,触发sort-merge(违反不变条件2),将32个thread queue 和一个warp queue merge到一起(双调归并排序),更新两队列</li>
+<li>将较小的K个元素放入warp queue,将第k+1至第k+32t+1个元素放入thread queue </li>
+<li>不断读取距离值,更新thread warp queue</li>
+</ul>
+<p><strong>算法需要维持三个不变条件</strong></p>
+<ol>
+<li>all per-lane T0 are not in the warp queue(min-k).</li>
+<li>all per-lane T0 are greater than all warp queue keys W.</li>
+<li>all ai seen so far in the min-k are contained in either some lane’s thread queue or in the warp queue.</li>
+</ol>
+<p>示意图与算法流程如下图所示.</p>
+<p><img src="warpselect.png" alt=""></p>
+<p><img src="alg.png" alt=""></p>
+<h2 id="3-检索服务"><a href="#3-检索服务" class="headerlink" title="3.检索服务"></a>3.检索服务</h2><p><strong>根据faiss提供的一些操作索引结构的方法,完成了一个每日构建索引的检索服务</strong></p>
+<p>详见:<a href="https://github.com/FlYWMe/SearchServer" target="_blank" rel="noopener">Github</a></p>
+<p>功能主要包括:</p>
+<ul>
+<li>添加向量至索引结构</li>
+<li>检索向量<ul>
+<li>topK Search</li>
+<li>Approximate Nearest Neighbor Search </li>
+</ul>
+</li>
+<li>按日期检索</li>
+<li>删除指定id向量或范围内向量</li>
+<li>重新配置</li>
+</ul>
+<h2 id="4-参考好文"><a href="#4-参考好文" class="headerlink" title="4.参考好文"></a>4.参考好文</h2><ul>
+<li><a href="https://github.com/facebookresearch/faiss" target="_blank" rel="noopener">faiss 源码及wiki</a></li>
+<li><a href="https://arxiv.org/abs/1702.08734" target="_blank" rel="noopener">faiss 论文</a></li>
+<li><a href="https://zhuanlan.zhihu.com/c_159623040" target="_blank" rel="noopener">一个向量搜索的知乎专栏</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/28/hello-world/" rel="next" title="Hello World">
+                <i class="fa fa-chevron-left"></i> Hello World
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="fly" />
+            
+              <p class="site-author-name" itemprop="name">fly</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:1445184151@qq.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=1346261&auto=0&height=66"></iframe>
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Faiss-Billion-scale-similarity-search-with-GPUs"><span class="nav-number">1.</span> <span class="nav-text">Faiss : Billion-scale similarity search with GPUs</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-索引类型"><span class="nav-number">1.1.</span> <span class="nav-text">1.索引类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-检索过程"><span class="nav-number">1.2.</span> <span class="nav-text">2.检索过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-cpu-flat-search"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 cpu flat search</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-inverted-file-IVF-search"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 inverted file(IVF) search</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-PQ-search"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 PQ search</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-GPU-flat-search"><span class="nav-number">1.2.4.</span> <span class="nav-text">2.4 GPU flat search</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#contributions"><span class="nav-number">1.2.4.1.</span> <span class="nav-text">contributions</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#fast-k-selection-on-the-GPU"><span class="nav-number">1.2.4.2.</span> <span class="nav-text">fast k-selection on the GPU</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-检索服务"><span class="nav-number">1.3.</span> <span class="nav-text">3.检索服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-参考好文"><span class="nav-number">1.4.</span> <span class="nav-text">4.参考好文</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fly</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.3</div>
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

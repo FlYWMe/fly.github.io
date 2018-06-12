@@ -313,6 +313,313 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/12/Faiss/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fly">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dreamer fly's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/12/Faiss/" itemprop="url">Untitled</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-12T17:09:33+08:00">
+                2018-06-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Faiss-Billion-scale-similarity-search-with-GPUs"><a href="#Faiss-Billion-scale-similarity-search-with-GPUs" class="headerlink" title="Faiss : Billion-scale similarity search with GPUs"></a>Faiss : Billion-scale similarity search with GPUs</h1><blockquote>
+<p>Faiss is a library for efficient similarity search and clustering of dense vectors. It contains algorithms that search in sets of vectors of any size, up to ones that possibly do not fit in RAM. It also contains supporting code for evaluation and parameter tuning. Faiss is written in C++ with complete wrappers for Python. Some of the most useful algorithms are implemented on the GPU. It is developed by Facebook AI Research.</p>
+</blockquote>
+<p><strong>faiss 主要围绕索引index进行一系列相应的检索</strong></p>
+<h2 id="1-索引类型"><a href="#1-索引类型" class="headerlink" title="1.索引类型"></a>1.索引类型</h2><table>
+<thead>
+<tr>
+<th style="text-align:center">method</th>
+<th style="text-align:center">class name</th>
+<th style="text-align:center">index_factory</th>
+<th style="text-align:center">parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">exact search for L2</td>
+<td style="text-align:center">IndexFlatL2</td>
+<td style="text-align:center">“Flat”</td>
+<td style="text-align:center">d</td>
+</tr>
+<tr>
+<td style="text-align:center">exact search for inner product</td>
+<td style="text-align:center">IndexFlatIP</td>
+<td style="text-align:center">“Flat”</td>
+<td style="text-align:center">d</td>
+</tr>
+<tr>
+<td style="text-align:center">hierarchial navigable small world graph</td>
+<td style="text-align:center">IndexHNSWFlat</td>
+<td style="text-align:center">“HNSWx,Flat”</td>
+<td style="text-align:center">d,M</td>
+</tr>
+<tr>
+<td style="text-align:center">inverted file withexact post-vertification</td>
+<td style="text-align:center">IndexIVFFlat</td>
+<td style="text-align:center">“IVFx,Flat”</td>
+<td style="text-align:center">quantizer,d,nlists,metric</td>
+</tr>
+<tr>
+<td style="text-align:center">locality sensitive hashing</td>
+<td style="text-align:center">IndexLSH</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">d,nbits</td>
+</tr>
+<tr>
+<td style="text-align:center">scalar quantizer</td>
+<td style="text-align:center">IndexScalarQuantizer</td>
+<td style="text-align:center">“SQ8”</td>
+<td style="text-align:center">d</td>
+</tr>
+<tr>
+<td style="text-align:center">product quantizer</td>
+<td style="text-align:center">IndexPQ</td>
+<td style="text-align:center">“PQx”</td>
+<td style="text-align:center">d,M,nbits</td>
+</tr>
+<tr>
+<td style="text-align:center">IVF and SQ</td>
+<td style="text-align:center">IndexIVFSalarQuantizer</td>
+<td style="text-align:center">“IVFx,SQ4”,”IVFx,SQ8”</td>
+<td style="text-align:center">quantizer,d,nlists,qtype</td>
+</tr>
+<tr>
+<td style="text-align:center">IVFADC(coarse quantizer+PQ on residuals)</td>
+<td style="text-align:center">IndexIVFPQ</td>
+<td style="text-align:center">“IVFx,PQy”</td>
+<td style="text-align:center">quantizer,d,nlists,M,nbits</td>
+</tr>
+<tr>
+<td style="text-align:center">IVFADC+R(same as IVFADC with re-ranking based on codes)</td>
+<td style="text-align:center">IndexIVFPQR</td>
+<td style="text-align:center">“IVFx,PQy+z”</td>
+<td style="text-align:center">quantizer,d,nlists,M,nbits,M_refine,nbits_refine</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Pre-filtering PQ codes with polysemous codes:设置一个阈值减少海明距离的对比次数.训练前定义index.do_polysemous_training = true</li>
+<li>精确检索:flat,不按照顺序添加使用add_with_ids</li>
+<li><strong>内存限制</strong><ul>
+<li>have a lots of RAM or the dataset is small: HNSW(不支持:add_with_ids/remove/gpu)</li>
+<li>if somewhat: …,flat</li>
+<li>if quite important: PCARx,…,SQ8</li>
+<li>if very important: OPQx_y,…,PQx</li>
+</ul>
+</li>
+<li>IVF加速,PQ减小内存占用</li>
+<li><strong>special operation(都不支持gpu)</strong><ul>
+<li>remove_ids:删除一个IDSelector 批量IDSelectorBatch</li>
+<li>range_search:R邻域搜索</li>
+<li>write_index/read_index:将索引写入文件/读取索引文件</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-检索过程"><a href="#2-检索过程" class="headerlink" title="2.检索过程"></a>2.检索过程</h2><ul>
+<li>getting data</li>
+<li>building an index and adding the vectors to it </li>
+<li>searching</li>
+</ul>
+<pre><code>//init data
+int d = 64;            // dimension
+int nb = 100000;       // database size
+int nq = 10000;        // nb of queries
+float *xb = new float[d * nb];
+float *xq = new float[d * nq];
+for(int i = 0; i &lt; nb; i++) {
+for(int j = 0; j &lt; d; j++) xb[d * i + j] = drand48();
+xb[d * i] += i / 1000.;
+}
+for(int i = 0; i &lt; nq; i++) {
+for(int j = 0; j &lt; d; j++) xq[d * i + j] = drand48();
+xq[d * i] += i / 1000.;
+}
+
+//build index add vectors
+faiss::IndexFlatL2 index(d);// call constructor
+index.add(nb, xb);        // add vectors to the index
+printf(&quot;ntotal = %ld\n&quot;, index.ntotal);
+
+// search xq
+long *I = new long[k * nq];
+float *D = new float[k * nq];
+index.search(nq, xq, k, D, I);
+</code></pre><h3 id="2-1-cpu-flat-search"><a href="#2-1-cpu-flat-search" class="headerlink" title="2.1 cpu flat search"></a>2.1 cpu flat search</h3><p><strong>最大堆实现</strong></p>
+<ul>
+<li>根据距离比较的方法L2/Inner Product 选择分支</li>
+<li>初始化数据结构heaparray,堆结构保存val+id</li>
+<li>数据量不多时使用sse否则用blas</li>
+<li>暴力搜索,用openmp并行每个查询向量的查询过程,逐一计算查询向量和向量库中的所有距离(_mm_hadd_ps类似指令),加入最大堆</li>
+<li>最终对堆内元素排序.</li>
+</ul>
+<h3 id="2-2-inverted-file-IVF-search"><a href="#2-2-inverted-file-IVF-search" class="headerlink" title="2.2 inverted file(IVF) search"></a>2.2 inverted file(IVF) search</h3><p><strong>倒排实现</strong></p>
+<ul>
+<li>训练: 粗糙量化</li>
+<li>建立索引: 遍历所有向量,找到距离最近的聚类中心;遍历所有聚类中心建立倒排表(将可以聚类到同一中心的id push到同一倒排list)</li>
+<li>检索: 先粗糙检索返回几个最近的聚类中心,获取对应的倒排索引表,遍历每个向量,和查询向量计算距离,将结果放入最大堆,最终将最大堆排序</li>
+</ul>
+<blockquote>
+<p>在暴力检索基础上通过聚类将数据分片,粗糙检索使得计算代价大大减小</p>
+</blockquote>
+<h3 id="2-3-PQ-search"><a href="#2-3-PQ-search" class="headerlink" title="2.3 PQ search"></a>2.3 PQ search</h3><p><strong>乘积量化实现</strong></p>
+<p>关于乘积量化是引用了<a href="https://lear.inrialpes.fr/pubs/2011/JDS11/jegou_searching_with_quantization.pdf" target="_blank" rel="noopener">PQ论文</a><br>, 我之前也写过关于这篇论文的<a href="https://flywme.github.io/2018/01/02/product-quantization-for-NN-search/" target="_blank" rel="noopener">笔记</a></p>
+<p>思想:向量量化只是单次聚类,乘积量化将一个高维向量压缩至低维空间的笛卡尔积，再在子空间内进行量化（K-means构造码本）用一个很短的编码表示.将向量分成M段, 每一段内共有ksub个聚类中心(码本),每个聚类中心共有dsub维.</p>
+<p><strong>进一步优化的算法是将PQ和IVF结合,检索速度提升,存储空间缩小</strong></p>
+<h3 id="2-4-GPU-flat-search"><a href="#2-4-GPU-flat-search" class="headerlink" title="2.4 GPU flat search"></a>2.4 GPU flat search</h3><h4 id="contributions"><a href="#contributions" class="headerlink" title="contributions"></a>contributions</h4><ul>
+<li>a GPU k-selection algorithm, operating in fast register<br>memory(使用shuffle指令) and flexible enough to be fusable with other kernels, for which we provide a complexity analysis.</li>
+<li>a near-optimal algorithmic layout for exact and approximate k-nearest neighbor search on GPU.</li>
+<li>a range of experiments that show that these improvements<br>outperform previous art by a large margin on mid- to large-scale nearest-neighbor search tasks, in single or multi-GPU configurations.</li>
+</ul>
+<h4 id="fast-k-selection-on-the-GPU"><a href="#fast-k-selection-on-the-GPU" class="headerlink" title="fast k-selection on the GPU"></a>fast k-selection on the GPU</h4><p><strong>基于GPU的检索算法: warpSelect</strong></p>
+<ul>
+<li>a: 计算好的查询向量与向量库的距离,每次连续读取warp size(32)个距离</li>
+<li>每一行为一个lane,lane j负责处理aj,a32+j,…, merge thread queue时使用<strong>shuffle指令</strong>,允许线程直接读取其他线程的寄存器值,只要在同一个warp中</li>
+<li>将读入的距离与To比较,若大直接丢掉,否则通过插入排序进入thread queue中,队列从左到右从大到小</li>
+<li>通过warp ballot指令判断To是否大于warp queue中的最大值Wk-1,只要有一个To小于Wk-1,触发sort-merge(违反不变条件2),将32个thread queue 和一个warp queue merge到一起(双调归并排序),更新两队列</li>
+<li>将较小的K个元素放入warp queue,将第k+1至第k+32t+1个元素放入thread queue </li>
+<li>不断读取距离值,更新thread warp queue</li>
+</ul>
+<p><strong>算法需要维持三个不变条件</strong></p>
+<ol>
+<li>all per-lane T0 are not in the warp queue(min-k).</li>
+<li>all per-lane T0 are greater than all warp queue keys W.</li>
+<li>all ai seen so far in the min-k are contained in either some lane’s thread queue or in the warp queue.</li>
+</ol>
+<p>示意图与算法流程如下图所示.</p>
+<p><img src="warpselect.png" alt=""></p>
+<p><img src="alg.png" alt=""></p>
+<h2 id="3-检索服务"><a href="#3-检索服务" class="headerlink" title="3.检索服务"></a>3.检索服务</h2><p><strong>根据faiss提供的一些操作索引结构的方法,完成了一个每日构建索引的检索服务</strong></p>
+<p>详见:<a href="https://github.com/FlYWMe/SearchServer" target="_blank" rel="noopener">Github</a></p>
+<p>功能主要包括:</p>
+<ul>
+<li>添加向量至索引结构</li>
+<li>检索向量<ul>
+<li>topK Search</li>
+<li>Approximate Nearest Neighbor Search </li>
+</ul>
+</li>
+<li>按日期检索</li>
+<li>删除指定id向量或范围内向量</li>
+<li>重新配置</li>
+</ul>
+<h2 id="4-参考好文"><a href="#4-参考好文" class="headerlink" title="4.参考好文"></a>4.参考好文</h2><ul>
+<li><a href="https://github.com/facebookresearch/faiss" target="_blank" rel="noopener">faiss 源码及wiki</a></li>
+<li><a href="https://arxiv.org/abs/1702.08734" target="_blank" rel="noopener">faiss 论文</a></li>
+<li><a href="https://zhuanlan.zhihu.com/c_159623040" target="_blank" rel="noopener">一个向量搜索的知乎专栏</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/28/hello-world/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1508,7 +1815,7 @@ sudo redis-server ./redis.conf
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
