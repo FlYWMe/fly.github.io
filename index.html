@@ -480,7 +480,7 @@
 <td style="text-align:center">IVFADC+R(same as IVFADC with re-ranking based on codes)</td>
 <td style="text-align:center">IndexIVFPQR</td>
 <td style="text-align:center">“IVFx,PQy+z”</td>
-<td style="text-align:center">quantizer,d,nlists,M,nbits,M_refine,nbits_refine</td>
+<td style="text-align:center">quantizer,d,nlists,M,<br>nbits,M_refine,nbits_refine</td>
 </tr>
 </tbody>
 </table>
@@ -549,13 +549,13 @@ index.search(nq, xq, k, D, I);
 <p>在暴力检索基础上通过聚类将数据分片,粗糙检索使得计算代价大大减小</p>
 </blockquote>
 <h3 id="2-3-PQ-search"><a href="#2-3-PQ-search" class="headerlink" title="2.3 PQ search"></a>2.3 PQ search</h3><p><strong>乘积量化实现</strong></p>
-<p>关于乘积量化是引用了<a href="https://lear.inrialpes.fr/pubs/2011/JDS11/jegou_searching_with_quantization.pdf" target="_blank" rel="noopener">PQ论文</a><br>, 我之前也写过关于这篇论文的<a href="https://flywme.github.io/2018/01/02/product-quantization-for-NN-search/" target="_blank" rel="noopener">笔记</a></p>
+<p>关于乘积量化是引用了<a href="https://lear.inrialpes.fr/pubs/2011/JDS11/jegou_searching_with_quantization.pdf" target="_blank" rel="noopener">PQ论文</a><br>我之前也写过关于这篇论文的<a href="https://flywme.github.io/2018/01/02/product-quantization-for-NN-search/" target="_blank" rel="noopener">笔记</a></p>
 <p>思想:向量量化只是单次聚类,乘积量化将一个高维向量压缩至低维空间的笛卡尔积，再在子空间内进行量化（K-means构造码本）用一个很短的编码表示.将向量分成M段, 每一段内共有ksub个聚类中心(码本),每个聚类中心共有dsub维.</p>
 <p><strong>进一步优化的算法是将PQ和IVF结合,检索速度提升,存储空间缩小</strong></p>
 <h3 id="2-4-GPU-flat-search"><a href="#2-4-GPU-flat-search" class="headerlink" title="2.4 GPU flat search"></a>2.4 GPU flat search</h3><h4 id="contributions"><a href="#contributions" class="headerlink" title="contributions"></a>contributions</h4><ul>
-<li>a GPU k-selection algorithm, operating in fast register<br>memory(使用shuffle指令) and flexible enough to be fusable with other kernels, for which we provide a complexity analysis.</li>
+<li>a GPU k-selection algorithm, operating in fast register memory(使用shuffle指令) and flexible enough to be fusable with other kernels, for which we provide a complexity analysis.</li>
 <li>a near-optimal algorithmic layout for exact and approximate k-nearest neighbor search on GPU.</li>
-<li>a range of experiments that show that these improvements<br>outperform previous art by a large margin on mid- to large-scale nearest-neighbor search tasks, in single or multi-GPU configurations.</li>
+<li>a range of experiments that show that these improvements outperform previous art by a large margin on mid- to large-scale nearest-neighbor search tasks, in single or multi-GPU configurations.</li>
 </ul>
 <h4 id="fast-k-selection-on-the-GPU"><a href="#fast-k-selection-on-the-GPU" class="headerlink" title="fast k-selection on the GPU"></a>fast k-selection on the GPU</h4><p><strong>基于GPU的检索算法: warpSelect</strong></p>
 <ul>
@@ -590,7 +590,7 @@ index.search(nq, xq, k, D, I);
 <li>删除指定id向量或范围内向量</li>
 <li>重新配置</li>
 </ul>
-<h2 id="4-参考好文"><a href="#4-参考好文" class="headerlink" title="4.参考好文"></a>4.参考好文</h2><ul>
+<h2 id="5-参考好文"><a href="#5-参考好文" class="headerlink" title="5.参考好文"></a>5.参考好文</h2><ul>
 <li><a href="https://github.com/facebookresearch/faiss" target="_blank" rel="noopener">faiss 源码及wiki</a></li>
 <li><a href="https://arxiv.org/abs/1702.08734" target="_blank" rel="noopener">faiss 论文</a></li>
 <li><a href="https://zhuanlan.zhihu.com/c_159623040" target="_blank" rel="noopener">一个向量搜索的知乎专栏</a></li>
