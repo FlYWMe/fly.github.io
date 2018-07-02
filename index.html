@@ -313,6 +313,193 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/02/扩充数据集之网络爬虫/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fly">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dreamer fly's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/02/扩充数据集之网络爬虫/" itemprop="url">扩充数据集之网络爬虫</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-02T21:20:45+08:00">
+                2018-07-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="爬取百度、谷歌、必应图片"><a href="#爬取百度、谷歌、必应图片" class="headerlink" title="爬取百度、谷歌、必应图片"></a>爬取百度、谷歌、必应图片</h1><h2 id="1-百度"><a href="#1-百度" class="headerlink" title="1.百度"></a>1.百度</h2><p>安装scrapy：sudo pip install scrapy  </p>
+<h3 id="初始化项目"><a href="#初始化项目" class="headerlink" title="初始化项目"></a>初始化项目</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scrapy startproject [项目名称]</span><br></pre></td></tr></table></figure>
+<h3 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">├── myScrapy 　//项目的Python模块</span><br><span class="line">│   ├── __init__.py　//</span><br><span class="line">│   ├── items.py //项目的目标文件</span><br><span class="line">│   ├── middlewares.py　//</span><br><span class="line">│   ├── pipelines.py //项目的管道文件</span><br><span class="line">│   ├── settings.py //项目的设置文件</span><br><span class="line">│   └── spiders　//存储爬虫代码目录</span><br><span class="line">│       └── __init__.py</span><br><span class="line">├── readme.md</span><br><span class="line">└── scrapy.cfg //项目配置文件</span><br></pre></td></tr></table></figure>
+<h4 id="items-py文件"><a href="#items-py文件" class="headerlink" title="items.py文件"></a>items.py文件</h4><ul>
+<li>用于定义存储字段对象，需要继承scrapy.Item</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">例：</span><br><span class="line">    name  = scrapy.Field()</span><br><span class="line">    age = scrapy.Field()</span><br><span class="line">    后面的scrapy.Field()是固定统一的。这种类似于Java中的对象属性</span><br></pre></td></tr></table></figure>
+<h4 id="初始化爬虫编码"><a href="#初始化爬虫编码" class="headerlink" title="初始化爬虫编码"></a>初始化爬虫编码</h4><ul>
+<li><p>首先定位目录到spiders文件夹下，运行命令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">shell</span><br><span class="line">scrapy genspider [爬虫名称] [爬虫域范围]</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>执行命令后会在spiders文件夹下生成一个py文件</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//这个规则都是固定的，parse方法名称不能改，重写，这里用于处理爬取获得结果。</span><br><span class="line">class BaiduSpider(scrapy.Spider):</span><br><span class="line">    name = 'baidu'   //爬虫名称</span><br><span class="line">    allowed_domains = ['image.baidu.com']   //域名范围</span><br><span class="line">    start_urls = ['http://image.baidu.com/']   //开始url，可设置多个</span><br><span class="line"></span><br><span class="line">    //重写parse方法，些爬虫代码的地方</span><br><span class="line">    def parse(self, response):</span><br><span class="line">        pass</span><br></pre></td></tr></table></figure>
+<h4 id="pipelines-py-管道文件"><a href="#pipelines-py-管道文件" class="headerlink" title="pipelines.py 管道文件"></a>pipelines.py 管道文件</h4><ul>
+<li>需要重写process_item方法，用于处理爬虫返回的结果,如存储，下载等等。   </li>
+<li>有两个参数：item - 爬取的item（内容）,spider - 爬取该item的Spider</li>
+</ul>
+<h4 id="启动爬虫项目"><a href="#启动爬虫项目" class="headerlink" title="启动爬虫项目"></a>启动爬虫项目</h4><ul>
+<li>cd到spiders目录，运行<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scrapy crawl [爬虫名称] //bdimage.py文件中的name属性值</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<blockquote>
+<p><code>注：</code>在安装完Scrapy后，修改settings.py文件中的<code>IMAGES_STORE</code>路径，即可直接运行<code>scrapy crawl bdimage</code>测试项目</p>
+</blockquote>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>修改settings.py<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 配置图片下载的绝对路径</span><br><span class="line">IMAGES_STORE = &quot;images/&quot;</span><br></pre></td></tr></table></figure></p>
+<p>spiders目录下，修改bdimage.py文件中的queryWord&amp;word<br>要爬取的关键字为中文的话，需要Python url转码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">python:</span><br><span class="line">data=&quot;要爬取的关键字&quot;</span><br><span class="line">import urllib</span><br><span class="line">urllib.quote(data)</span><br></pre></td></tr></table></figure>
+<p>最终爬取的图片保存于spiders/images/</p>
+<h2 id="2-谷歌"><a href="#2-谷歌" class="headerlink" title="2.谷歌"></a>2.谷歌</h2><p>输入关键字搜索,鼠标滚至最后一页 -&gt; F12 -&gt; console<br>原图片url准备：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// pull down jquery into the JavaScript console</span><br><span class="line">var script = document.createElement(&apos;script&apos;);</span><br><span class="line">script.src = &quot;https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js&quot;;</span><br><span class="line">document.getElementsByTagName(&apos;head&apos;)[0].appendChild(script);</span><br><span class="line"></span><br><span class="line">// grab the URLs</span><br><span class="line">var urls = $(&apos;.rg_di .rg_meta&apos;).map(function() &#123; return JSON.parse($(this).text()).ou; &#125;);</span><br><span class="line"></span><br><span class="line">// write the URls to file (one per line)</span><br><span class="line">var textToSave = urls.toArray().join(&apos;\n&apos;);</span><br><span class="line">var hiddenElement = document.createElement(&apos;a&apos;);</span><br><span class="line">hiddenElement.href = &apos;data:attachment/text,&apos; + encodeURI(textToSave);</span><br><span class="line">hiddenElement.target = &apos;_blank&apos;;</span><br><span class="line">hiddenElement.download = &apos;urls.txt&apos;;</span><br><span class="line">hiddenElement.click();</span><br></pre></td></tr></table></figure></p>
+<p>参考[2]写Python脚本爬图片<br>python google.py –urls urls.txt –output /path/to/images</p>
+<h2 id="3-必应"><a href="#3-必应" class="headerlink" title="3.必应"></a>3.必应</h2><p>首先要注册一个<a href="https://azure.microsoft.com/en-us/try/cognitive-services/?api=bing-image-search-api" target="_blank" rel="noopener">Bing Image Search API</a><br>注册完最下方的key则为可用API key<br>参考[3]写Python脚本爬取图片<br>python bing.py –query bald –output /path/to/images</p>
+<blockquote>
+<p>文件中的API_KEY要改为自己的key</p>
+</blockquote>
+<p><strong>最终三种方法都可以爬取图片</strong></p>
+<p><img src="example.png" alt=""></p>
+<h2 id="4-参考好文"><a href="#4-参考好文" class="headerlink" title="4.参考好文"></a>4.参考好文</h2><ul>
+<li>[1] <a href="https://zhuanlan.zhihu.com/p/38548426" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/38548426</a></li>
+<li>[2] <a href="https://www.pyimagesearch.com/2017/12/04/how-to-create-a-deep-learning-dataset-using-google-images/" target="_blank" rel="noopener">https://www.pyimagesearch.com/2017/12/04/how-to-create-a-deep-learning-dataset-using-google-images/</a></li>
+<li>[3] <a href="https://www.pyimagesearch.com/2018/04/09/how-to-quickly-build-a-deep-learning-image-dataset/" target="_blank" rel="noopener">https://www.pyimagesearch.com/2018/04/09/how-to-quickly-build-a-deep-learning-image-dataset/</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/12/Faiss/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1708,7 +1895,7 @@ sudo redis-server ./redis.conf
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1719,7 +1906,7 @@ sudo redis-server ./redis.conf
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
@@ -1730,7 +1917,7 @@ sudo redis-server ./redis.conf
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
