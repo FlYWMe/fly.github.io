@@ -313,6 +313,158 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/03/扩充数据集之数据增强/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="fly">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dreamer fly's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/03/扩充数据集之数据增强/" itemprop="url">扩充数据集之数据增强</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-03T09:39:56+08:00">
+                2018-07-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Data-Augmentation"><a href="#Data-Augmentation" class="headerlink" title="Data Augmentation"></a>Data Augmentation</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#-*- coding: utf-8 -*-</span><br><span class="line"># import packages</span><br><span class="line">from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img</span><br><span class="line">datagen = ImageDataGenerator(</span><br><span class="line">	rotation_range=0.2,</span><br><span class="line">	width_shift_range=0.2,</span><br><span class="line">	height_shift_range=0.2,</span><br><span class="line">	shear_range=0.2,</span><br><span class="line">	zoom_range=0.2,</span><br><span class="line">	horizontal_flip=True,</span><br><span class="line">	fill_mode=&apos;nearest&apos;)</span><br><span class="line">img = load_img(&apos;lena.jpg&apos;) # this is a PIL image, please replace to your own file path</span><br><span class="line">x = img_to_array(img) # this is a Numpy array with shape (3, 150, 150)</span><br><span class="line">x = x.reshape((1,) + x.shape) # this is a Numpy array with shape (1, 3, 150, 150)</span><br><span class="line"># the .flow() command below generates batches of randomly transformed images</span><br><span class="line"># and saves the results to the `preview/` directory</span><br><span class="line">i = 0</span><br><span class="line">for batch in datagen.flow(x,</span><br><span class="line">	batch_size=1,</span><br><span class="line">	save_to_dir=&apos;data/preview&apos;,</span><br><span class="line">	save_prefix=&apos;lena&apos;,</span><br><span class="line">	save_format=&apos;jpg&apos;):</span><br><span class="line">    i += 1</span><br><span class="line">    if i &gt; 20:</span><br><span class="line">        break # otherwise the generator would loop indefinitely</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>主要函数：ImageDataGenerator　实现了大多数上文中提到的图像几何变换方法．函数原型如下：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">keras.preprocessing.image.ImageDataGenerator(featurewise_center=False,</span><br><span class="line">    samplewise_center=False,</span><br><span class="line">    featurewise_std_normalization=False,</span><br><span class="line">    samplewise_std_normalization=False,</span><br><span class="line">    zca_whitening=False,</span><br><span class="line">    rotation_range=0.,</span><br><span class="line">    width_shift_range=0.,</span><br><span class="line">    height_shift_range=0.,</span><br><span class="line">    shear_range=0.,</span><br><span class="line">    zoom_range=0.,</span><br><span class="line">    channel_shift_range=0.,</span><br><span class="line">    fill_mode=&apos;nearest&apos;,</span><br><span class="line">    cval=0.,</span><br><span class="line">    horizontal_flip=False,</span><br><span class="line">    vertical_flip=False,</span><br><span class="line">    rescale=None,</span><br><span class="line">    dim_ordering=K.image_dim_ordering())</span><br></pre></td></tr></table></figure>
+<p>featurewise_center：布尔值，使输入数据集去中心化（均值为0）<br>samplewise_center：布尔值，使输入数据的每个样本均值为0<br>featurewise_std_normalization：布尔值，将输入除以数据集的标准差以完成标准化<br>samplewise_std_normalization：布尔值，将输入的每个样本除以其自身的标准差<br>zca_whitening：布尔值，对输入数据施加ZCA白化<br>rotation_range：整数，数据提升时图片随机转动的角度<br>width_shift_range：浮点数，图片宽度的某个比例，数据提升时图片水平偏移的幅度<br>height_shift_range：浮点数，图片高度的某个比例，数据提升时图片竖直偏移的幅度<br>shear_range：浮点数，剪切强度（逆时针方向的剪切变换角度）<br>zoom_range：浮点数或形如[lower,upper]的列表，随机缩放的幅度，若为浮点数，则相当于[lower,upper] = [1 - zoom_range, 1+zoom_range]<br>channel_shift_range：浮点数，随机通道偏移的幅度<br>fill_mode：；‘constant’，‘nearest’，‘reflect’或‘wrap’之一，当进行变换时超出边界的点将根据本参数给定的方法进行处理<br>cval：浮点数或整数，当fill_mode=constant时，指定要向超出边界的点填充的值<br>horizontal_flip：布尔值，进行随机水平翻转<br>vertical_flip：布尔值，进行随机竖直翻转<br>rescale: 重放缩因子,默认为None. 如果为None或0则不进行放缩,否则会将该数值乘到数据上(在应用其他变换之前)<br>dim_ordering：‘tf’和‘th’之一，规定数据的维度顺序。‘tf’模式下数据的形状为samples, width, height, channels，‘th’下形状为(samples, channels, width, height).该参数的默认值是Keras配置文件~/.keras/keras.json的image_dim_ordering值,如果你从未设置过的话,就是’th’  </p>
+<h2 id="参考好文"><a href="#参考好文" class="headerlink" title="参考好文"></a>参考好文</h2><ul>
+<li>[1] <a href="http://manutdzou.github.io/2016/10/26/data-augmentation.html#科研" target="_blank" rel="noopener">http://manutdzou.github.io/2016/10/26/data-augmentation.html#科研</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/02/扩充数据集之网络爬虫/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1895,7 +2047,7 @@ sudo redis-server ./redis.conf
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
